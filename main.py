@@ -30,7 +30,7 @@ async def test_integrations():
     # 1. WhatsApp (Evolution API)
     logger.info("\n1️⃣ Testando WhatsApp (Evolution API)...")
     whatsapp = WhatsAppCollector()
-    if await whatsapp.test_connection():
+    if whatsapp.test_connection():
         logger.info("   ✅ WhatsApp OK")
     else:
         logger.error("   ❌ WhatsApp FALHOU")
@@ -39,7 +39,7 @@ async def test_integrations():
     # 2. Discord
     logger.info("\n2️⃣ Testando Discord Bot...")
     discord_bot = DiscordCollector()
-    if await discord_bot.test_connection():
+    if discord_bot.test_connection():
         logger.info("   ✅ Discord OK")
         await discord_bot.stop_bot()
     else:

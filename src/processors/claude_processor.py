@@ -8,8 +8,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 import logging
 import json
-from anthropic import Anthropic
-from anthropic.types import Message
+from openai import OpenAI
 
 from src.config import settings
 from .prompts import SYSTEM_PROMPT, SUMMARY_PROMPT_TEMPLATE
@@ -32,7 +31,10 @@ class ClaudeProcessor:
     """
     
     def __init__(self):
-        self.client = Anthropic(api_key=settings.anthropic_api_key)
+        client_kwargs = {"api_key": settings.anthropic_api_key}
+        if settings.ai_base_url:
+            client_kwargs["base_url"] = settings.ai_base_url
+        self.client = OpenAI(**client_kwargs)
         self.model = settings.anthropic_model
         self.max_tokens = settings.anthropic_max_tokens
         
@@ -48,7 +50,7 @@ class ClaudeProcessor:
         try:
             logger.info("🔍 Testando conexão com Claude API...")
             
-            response = self.client.messages.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
                 max_tokens=50,
                 messages=[
@@ -56,8 +58,8 @@ class ClaudeProcessor:
                 ]
             )
             
-            if response.content:
-                logger.info(f"✅ Claude API OK - Modelo: {self.model}")
+            if response.choices:
+                logger.info(f"✅ AI API OK - Modelo: {self.model}")
                 return True
             return False
             
@@ -98,14 +100,17 @@ class ClaudeProcessor:
                 end_date=end_date
             )
             
-            # Chamar Claude API
-            logger.debug(f"Enviando {len(user_prompt)} caracteres para Claude...")
+            # Chamar AI API
+            logger.debug(f"Enviando {len(user_prompt)} caracteres para AI...")
             
-            response = self.client.messages.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
                 max_tokens=self.max_tokens,
-                system=SYSTEM_PROMPT,
                 messages=[
+                    {
+                        "role": "system",
+                        "content": SYSTEM_PROMPT
+                    },
                     {
                         "role": "user",
                         "content": user_prompt
@@ -127,11 +132,11 @@ class ClaudeProcessor:
                 logger.info("✅ Resumo gerado com sucesso")
                 
                 # Log de uso de tokens
-                if hasattr(response, 'usage'):
+                if hasattr(response, 'usage') and response.usage:
                     logger.info(
                         f"📊 Tokens: "
-                        f"input={response.usage.input_tokens}, "
-                        f"output={response.usage.output_tokens}"
+                        f"input={response.usage.prompt_tokens}, "
+                        f"output={response.usage.completion_tokens}"
                     )
                 
                 return summary_json
@@ -227,9 +232,9 @@ class ClaudeProcessor:
         
         return "".join(formatted)
     
-    def _extract_text_from_response(self, response: Message) -> str:
+    def _extract_text_from_response(self, response) -> str:
         """
-        Extrai texto da resposta do Claude.
+        Extrai texto da resposta da AI API.
         
         Args:
             response: Resposta da API
@@ -237,11 +242,9 @@ class ClaudeProcessor:
         Returns:
             Texto extraído
         """
-        text = ""
-        for block in response.content:
-            if hasattr(block, 'text'):
-                text += block.text
-        return text.strip()
+        if response.choices:
+            return response.choices[0].message.content.strip()
+        return ""
     
     def _parse_json_response(self, text: str) -> Optional[Dict[str, Any]]:
         """

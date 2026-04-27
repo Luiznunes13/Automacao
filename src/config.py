@@ -28,10 +28,11 @@ class Settings(BaseSettings):
     discord_guild_ids: str = Field(..., env="DISCORD_GUILD_IDS")
     discord_channel_ids: str = Field(default="", env="DISCORD_CHANNEL_IDS")
     
-    # Anthropic Claude
+    # AI (Anthropic / OpenAI-compatible como Z.ai)
     anthropic_api_key: str = Field(..., env="ANTHROPIC_API_KEY")
     anthropic_model: str = Field(default="claude-sonnet-4-20250514", env="ANTHROPIC_MODEL")
     anthropic_max_tokens: int = Field(default=4096, env="ANTHROPIC_MAX_TOKENS")
+    ai_base_url: str = Field(default="", env="AI_BASE_URL")
     
     # Email (SMTP)
     smtp_host: str = Field(..., env="SMTP_HOST")

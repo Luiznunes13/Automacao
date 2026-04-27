@@ -3,7 +3,7 @@ Database module - SQLAlchemy models e gerenciamento de conexões
 """
 
 from .database import SessionLocal, engine, init_db, get_db
-from .models import Message, ProcessedWindow
+from .models import Message, ProcessedWindow, SourceType
 
 __all__ = [
     "SessionLocal",
@@ -12,4 +12,5 @@ __all__ = [
     "get_db",
     "Message",
     "ProcessedWindow",
+    "SourceType",
 ]

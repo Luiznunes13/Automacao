@@ -2,18 +2,30 @@
 
 ## 📋 Passos para Começar
 
+
 ### 1. Instalar Dependências
 
+**Recomendado:** Use o Python do Anaconda/Miniconda para evitar travamentos do pip.
+
 ```powershell
-# Criar ambiente virtual
+# (Opção 1 - Anaconda, mais rápido e confiável)
+conda create -n ncam python=3.10 -y
+conda activate ncam
+pip install -r requirements.txt
+
+# (Opção 2 - venv, pode ser lento)
 python -m venv venv
-
-# Ativar ambiente virtual
 .\venv\Scripts\Activate.ps1
-
-# Instalar pacotes
 pip install -r requirements.txt
 ```
+
+Se o `pip install -r requirements.txt` travar, instale só os pacotes essenciais:
+
+```powershell
+pip install python-dotenv openai discord.py aiohttp requests pydantic colorlog pytz python-dateutil SQLAlchemy APScheduler
+```
+
+> **Nota:** O pacote `anthropic` não é necessário para rodar com Z.ai/GLM, pois o código usa a API OpenAI compatível.
 
 ### 2. Configurar Variáveis de Ambiente
 
@@ -52,9 +64,8 @@ Depois edite o arquivo `.env` com suas chaves e configurações reais.
 3. Vá em "Bot" → "Add Bot"
 4. Copie o **Token** (DISCORD_BOT_TOKEN)
 5. Ative as **Intents**:
-   - ✅ Message Content Intent
-   - ✅ Server Members Intent
-   - ✅ Presence Intent
+   - ✅ Intenção de conteúdo da mensagem (Message Content Intent)
+   - ✅ Intenção dos membros do servidor (Server Members Intent)
 6. Vá em "OAuth2" → "URL Generator":
    - Scopes: `bot`
    - Permissions: `Read Message History`, `Read Messages/View Channels`
@@ -64,13 +75,12 @@ Depois edite o arquivo `.env` com suas chaves e configurações reais.
    - Ative o "Developer Mode" no Discord (Configurações → Avançado)
    - Clique com botão direito no servidor → "Copiar ID"
 
-#### 🤖 Anthropic Claude
+#### 🤖 Z.ai / Claude / GLM
 
-1. Acesse [Anthropic Console](https://console.anthropic.com/)
-2. Faça login/cadastro
-3. Vá em "API Keys"
-4. Crie uma nova chave (ANTHROPIC_API_KEY)
-5. **Importante**: Adicione créditos à conta se necessário
+1. Acesse [Z.ai](https://z.ai/) ou [Anthropic Console](https://console.anthropic.com/)
+2. Gere uma chave de API compatível com OpenAI (ANTHROPIC_API_KEY)
+3. Configure o modelo desejado (ex: glm-4.5-flash)
+4. **Importante**: Adicione créditos à conta se necessário
 
 #### 📧 E-mail (Gmail)
 
@@ -78,6 +88,10 @@ Depois edite o arquivo `.env` com suas chaves e configurações reais.
 2. Vá em "Segurança" → "Verificação em duas etapas" (ative se ainda não estiver)
 3. Vá em "Senhas de app"
 4. Gere uma senha para "E-mail" → "Windows Computer"
+
+---
+
+> **Dica:** Se o pip travar, tente rodar o comando de instalação dos pacotes essenciais individualmente, ou use o Anaconda/Miniconda para evitar problemas de rede e dependências.
 5. Use essa senha no SMTP_PASSWORD (não use sua senha normal!)
 
 ### 4. Testar Integrações
